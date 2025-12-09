@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="recipeApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-sanitize.js"></script>
+  <script src="script.js"></script>
+</head>
+<body ng-controller="RecipeController as ctrl">
+
+  <header>
+    <h1>🌎 Recipe Explorer</h1>
+    <div class="controls">
+      <input type="text" ng-model="ctrl.searchTerm" placeholder="Search by dish name...">
+      <button ng-click="ctrl.searchRecipes()">Search</button>
+      <select ng-model="ctrl.selectedCountry" ng-change="ctrl.filterByCountry()">
+        <option value="">All Countries</option>
+        <option ng-repeat="area in ctrl.areas">{{ area }}</option>
+      </select>
+      <button ng-click="ctrl.loadRandom()">Random Dish</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div class="card" ng-repeat="meal in ctrl.meals" ng-click="ctrl.selectMeal(meal)">
+        <img ng-src="{{ meal.strMealThumb }}" alt="{{ meal.strMeal }}">
+        <div class="card-info">
+          <h3>{{ meal.strMeal }}</h3>
+          <p>{{ meal.strArea }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="recipe-details" ng-if="ctrl.selectedMeal">
+      <button class="close-btn" ng-click="ctrl.selectedMeal=null">✖ Close</button>
+      <h2>{{ ctrl.selectedMeal.strMeal }}</h2>
+      <img ng-src="{{ ctrl.selectedMeal.strMealThumb }}" alt="{{ ctrl.selectedMeal.strMeal }}" class="main-img"/>
+      <h3>Category: {{ ctrl.selectedMeal.strCategory }} | Cuisine: {{ ctrl.selectedMeal.strArea }}</h3>
+      <h3>Ingredients:</h3>
+      <ul>
+        <li ng-repeat="ing in ctrl.getIngredients(ctrl.selectedMeal)">{{ ing }}</li>
+      </ul>
+      <h3>Instructions:</h3>
+      <ol>
+        <li ng-repeat="step in ctrl.getInstructions(ctrl.selectedMeal)" ng-bind-html="ctrl.highlightIngredients(step, ctrl.selectedMeal)"></li>
+      </ol>
+      <a ng-if="ctrl.selectedMeal.strYoutube" href="{{ ctrl.selectedMeal.strYoutube }}" target="_blank">Watch Video</a>
+    </div>
+
+  </main>
+
+</body>
+</html>
